@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PXD2 phrase sitrep</title>
+<style>
+  :root { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0b0d10; color:#e8edf2; }
+  body { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+  h1 { font-size: 16px; font-weight: 600; }
+  textarea, input, button { font: inherit; width: 100%; box-sizing: border-box; background:#151a20; color:#e8edf2; border:1px solid #2a3340; padding:8px; }
+  button { cursor:pointer; margin-top:8px; }
+  pre { background:#151a20; padding:12px; overflow:auto; white-space:pre-wrap; }
+  label { display:block; margin:12px 0 4px; font-size:12px; color:#9aa6b2; }
+  .ok { color:#8fd19e; }
+</style>
+</head>
+<body>
+<h1>PXD2 phrase sitrep — both ends share the book</h1>
+<p class="ok">Many surfaces → one id → LEX1 hex on the wire → expanded sentence here.</p>
+<label>English in</label>
+<textarea id="plain" rows="3">how's it going</textarea>
+<button id="enc">Encode (cut tokens)</button>
+<label>LEX1 hex</label>
+<input id="hex" />
+<button id="dec">Decode (expand at terminal)</button>
+<label>Result</label>
+<pre id="out">load the book first</pre>
+<script>
+async function loadBook() {
+  const r = await fetch('library.json');
+  return r.json();
+}
+function norm(s) {
+  return s.toLowerCase().replace(/'/g,'').replace(/[^a-z0-9%.\s]+/g,' ').replace(/\s+/g,' ').trim();
+}
+function crc32(bytes) {
+  let c = 0 ^ (-1);
+  for (let i = 0; i < bytes.length; i++) {
+    c = (c >>> 8) ^ CRC_TABLE[(c ^ bytes[i]) & 0xff];
+  }
+  return (c ^ (-1)) >>> 0;
+}
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function jsonCanon(obj) {
+  if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+  if (Array.isArray(obj)) return '[' + obj.map(jsonCanon).join(',') + ']';
+  const keys = Object.keys(obj).sort();
+  return '{' + keys.map(k => JSON.stringify(k) + ':' + jsonCanon(obj[k])).join(',') + '}';
+}
+function match(book, text) {
+  const t = norm(text);
+  const map = {};
+  for (const e of book.sentences) {
+    for (const k of e.keys || []) map[norm(k)] = e;
+    map[norm(e.sentence)] = e;
+    if (e.kind) map[norm(e.kind)] = e;
+  }
+  if (map[t]) return map[t];
+  let best = null, bl = 0;
+  for (const k of Object.keys(map)) {
+    if (k && t.includes(k) && k.length > bl) { best = map[k]; bl = k.length; }
+  }
+  return best;
+}
+function slotsFrom(text) {
+  const slots = {};
+  const pct = text.match(/(\d+)\s*(%|percent)/i);
+  if (pct) slots.pct = +pct[1];
+  const nums = [...text.matchAll(/\b(\d{1,4})\b/g)].map(m => +m[1]);
+  for (const n of nums) {
+    if (slots.pct === n) continue;
+    slots.n = n; break;
+  }
+  return slots;
+}
+function fill(tmpl, slots) {
+  return tmpl.replace(/\{(\w+)\}/g, (_, k) => (k in slots ? slots[k] : (k === 'pct' || k === 'n' ? '0' : '—')));
+}
+function toHex(u8) {
+  return [...u8].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function fromHex(h) {
+  h = h.replace(/[^0-9a-f]/gi,'');
+  const u = new Uint8Array(h.length/2);
+  for (let i=0;i<u.length;i++) u[i] = parseInt(h.slice(i*2,i*2+2),16);
+  return u;
+}
+let BOOK, CRC;
+loadBook().then(b => {
+  BOOK = b;
+  const enc = new TextEncoder();
+  CRC = crc32(enc.encode(jsonCanon(b)));
+  document.getElementById('out').textContent = `book ${b.name} v${b.version} meanings ${b.sentences.length} crc ${CRC.toString(16).padStart(8,'0')}`;
+});
+document.getElementById('enc').onclick = () => {
+  const text = document.getElementById('plain').value;
+  const e = match(BOOK, text);
+  if (!e) { document.getElementById('out').textContent = 'no aligned phrase'; return; }
+  const slots = slotsFrom(text);
+  const w = 1;
+  let extra = [];
+  let mask = 0;
+  if ((e.slots||[]).includes('pct') && 'pct' in slots) { mask |= 1; extra.push(Math.max(0, Math.min(100, slots.pct))); }
+  if ((e.slots||[]).includes('n') && 'n' in slots) {
+    mask |= 2;
+    const n = Math.max(0, Math.min(65535, slots.n));
+    extra.push((n>>8)&255, n&255);
+  }
+  const frame = new Uint8Array(4+1+4+w+1+extra.length);
+  frame.set([0x4c,0x45,0x58,0x31, w]);
+  frame[5] = (CRC>>>24)&255; frame[6]=(CRC>>>16)&255; frame[7]=(CRC>>>8)&255; frame[8]=CRC&255;
+  frame[9] = e.id;
+  frame[10] = mask;
+  extra.forEach((b,i) => frame[11+i]=b);
+  const hex = toHex(frame);
+  document.getElementById('hex').value = hex;
+  const sent = fill(e.sentence, slots);
+  document.getElementById('out').textContent = JSON.stringify({id:e.id,kind:e.kind,hex,frame_bytes:frame.length,utf8_bytes:sent.length,sentence:sent,slots}, null, 2);
+};
+document.getElementById('dec').onclick = () => {
+  const u = fromHex(document.getElementById('hex').value);
+  if (String.fromCharCode(...u.slice(0,4)) !== 'LEX1') { document.getElementById('out').textContent = 'not LEX1'; return; }
+  const crc = (u[5]<<24|u[6]<<16|u[7]<<8|u[8])>>>0;
+  if (crc !== CRC) { document.getElementById('out').textContent = 'library hash mismatch — sync the book'; return; }
+  const sid = u[9];
+  const mask = u[10];
+  let i = 11;
+  const slots = {};
+  if (mask & 1) { slots.pct = u[i++]; }
+  if (mask & 2) { slots.n = (u[i]<<8)|u[i+1]; }
+  const e = BOOK.sentences.find(x => x.id === sid);
+  if (!e) { document.getElementById('out').textContent = 'unknown id '+sid; return; }
+  const sent = fill(e.sentence, slots);
+  document.getElementById('plain').value = sent;
+  document.getElementById('out').textContent = JSON.stringify({id:sid,kind:e.kind,sentence:sent,slots}, null, 2);
+};
+</script>
+</body>
+</html>
