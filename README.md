@@ -1,20 +1,22 @@
-# pxd2-encyc-seed
+# encyc-lex
 
-Closed encyclopedia book for Numerical Sentencing / LEX1.
+Public closed books + wire for Numerical Sentencing.
 
-Not the `PxD2/lex` demo library. Not a Wikipedia dump.
+Not `PxD2/lex` demo. Not `cyrptonics-lab` private directory.
 
-- book: `library.json`
-- compact book: `library.min.json`
-- sequential index: `INDEX.tsv`
-- codec helper: `index.py`
-- receipt: `RECEIPT.json`
-- sample frames: `FRAMES.json`
+| layer | path | what |
+| --- | --- | --- |
+| encyclopedia | `shards/` + `stitch.py` | ids 1–200 definitions |
+| phrases | `phrases/` | 114 surfaces → 10 meaning ids |
+| warble / LoRa | `warble/wrbl.py` | WRB1 id+slot stream + WAV hear |
+| tests | `tests/test_roundtrip.py` | phrase, shards, warble hear |
 
 ```
-python3 index.py
+python3 phrases/codec.py "whats up"
+python3 warble/wrbl.py
+python3 warble/wrbl.py hear warble/sitrep.wav
+python3 tests/test_roundtrip.py
+python3 stitch.py
 ```
 
-v2: ids 1–200, width 1, `library_crc32` c43be90f.
-
-Refuse a frame if crc mismatches. Sync the book before the next sentence.
+Two books. Same numeric id in phrase ≠ encyclopedia. WRB1 carries `lib_crc32`; refuse on mismatch.

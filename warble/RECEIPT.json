@@ -1,22 +1,24 @@
 {
   "sample": {
-    "hex": "5752423101e454a66700050102050601",
-    "frame_bytes": 16,
+    "hex": "5752423101e454a667000501035e00070200050164060001030a0002",
+    "frame_bytes": 28,
     "lora_packets": 1,
     "ids": [1, 2, 5, 6, 1],
     "width": 1,
     "library_crc32": "e454a667",
-    "expanded_bytes": 302,
+    "book": "pxd2-phrase-sitrep",
+    "expanded_bytes": 290,
     "expanded_est_tokens": 46,
-    "frame_vs_utf8_pct": 5.3
+    "frame_vs_utf8_pct": 9.66
   },
   "capacity": {
     "lora_payload_bytes": 237,
     "header_bytes": 11,
-    "ids_per_237B": 226,
+    "recs_per_237B_est": 102,
     "avg_sentence_tokens": 20.0,
-    "expanded_tokens_per_packet": 4520,
-    "packets_for_1e6_expanded_tokens": 222,
-    "note": "1e6 is expanded tokens after the book is already on both radios, not novel UTF-8"
-  }
+    "expanded_tokens_per_packet": 2040,
+    "packets_for_1e6_expanded_tokens": 491,
+    "note": "record = id + mask + optional pct/n; book already on both radios"
+  },
+  "hear_ok": true
 }
