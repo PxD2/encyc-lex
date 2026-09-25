@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "hex": "4c45583101c43be90f0100",
+    "frame_bytes": 11,
+    "utf8_bytes": 124,
+    "frame_vs_utf8_pct": 8.87,
+    "sentence": "An encyclopedia is a reference work that arranges articles so a reader can look up a subject without reading the whole book.",
+    "library_crc32": "c43be90f"
+  },
+  {
+    "id": 56,
+    "hex": "4c45583101c43be90f38020038",
+    "frame_bytes": 13,
+    "utf8_bytes": 109,
+    "frame_vs_utf8_pct": 11.93,
+    "sentence": "A numerical sentence is a closed-book ideogram: id 56 stands for one agreed paragraph both ends already hold.",
+    "library_crc32": "c43be90f"
+  },
+  {
+    "id": 59,
+    "hex": "4c45583101c43be90f3b0108",
+    "frame_bytes": 12,
+    "utf8_bytes": 160,
+    "frame_vs_utf8_pct": 7.5,
+    "sentence": "Compression to a few frame bytes is real only after the receiver already stores this book. Claimed cut 8 percent is frame versus UTF-8 of the expanded sentence.",
+    "library_crc32": "c43be90f"
+  }
+]

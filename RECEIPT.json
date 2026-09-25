@@ -1,0 +1,13 @@
+{
+  "name": "pxd2-encyc-seed",
+  "version": 2,
+  "sentences": 200,
+  "max_id": 200,
+  "recommended_width": 1,
+  "book_compact_bytes": 29151,
+  "avg_sentence_utf8": 78.9,
+  "sum_sentence_utf8": 15786,
+  "wire_bytes_per_hit": 11,
+  "library_crc32": "c43be90f",
+  "note": "wire savings only after both ends already hold this book"
+}
