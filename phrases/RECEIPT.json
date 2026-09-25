@@ -1,0 +1,14 @@
+{
+  "name": "pxd2-phrase-sitrep",
+  "version": 1,
+  "meanings": 10,
+  "surfaces": 114,
+  "width": 1,
+  "library_crc32": "e454a667",
+  "sitrep_surfaces_to_id": 1,
+  "sample": {
+    "in": "how's it going",
+    "id": 1,
+    "hex": "4c45583101e454a6670100"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "name": "pxd2-phrase-sitrep",
+  "version": 1,
+  "source": "aligned-phrase clusters; one id per meaning; not PxD2/lex production book",
+  "sentences": [
+    {
+      "id": 1,
+      "kind": "sitrep",
+      "keys": [
+        "how's it going", "hows it going", "how is it going",
+        "how you doing", "how ya doing", "how are you doing",
+        "what you doing", "what are you doing", "whatcha doing",
+        "what's happening", "whats happening", "what is happening",
+        "what's going on", "whats going on", "what is going on",
+        "what's up", "whats up", "sup", "wassup",
+        "how goes it", "how goes", "how we looking",
+        "status", "sitrep", "situation report", "status check",
+        "you good", "you alright", "you okay", "you ok",
+        "any news", "what is the word", "what's the word"
+      ],
+      "slots": ["pct", "n"],
+      "sentence": "SITREP. Status check. Report current state. Fuel or load {pct} percent. Node {n}."
+    },
+    {
+      "id": 2,
+      "kind": "ack",
+      "keys": [
+        "ok", "okay", "roger", "copy", "copy that", "got it",
+        "understood", "wilco", "affirmative", "yes", "yeah",
+        "10-4", "ten four", "acknowledged", "ack"
+      ],
+      "slots": [],
+      "sentence": "ACK. Message received and understood."
+    },
+    {
+      "id": 3,
+      "kind": "nack",
+      "keys": [
+        "no", "negative", "denied", "reject", "refused",
+        "cannot", "can't", "unable", "no go", "nogo", "cancel"
+      ],
+      "slots": [],
+      "sentence": "NACK. Negative. Do not proceed."
+    },
+    {
+      "id": 4,
+      "kind": "wait",
+      "keys": [
+        "wait", "hold", "stand by", "standby", "one second",
+        "hang on", "give me a minute", "hold on", "pause"
+      ],
+      "slots": ["n"],
+      "sentence": "HOLD. Stand by {n} seconds. Do not advance."
+    },
+    {
+      "id": 5,
+      "kind": "ready",
+      "keys": [
+        "ready", "good to go", "g2g", "set", "we're set",
+        "all set", "locked in", "plant ready", "green"
+      ],
+      "slots": ["pct"],
+      "sentence": "READY. Plant green. Load {pct} percent. Awaiting next sentence."
+    },
+    {
+      "id": 6,
+      "kind": "done",
+      "keys": [
+        "done", "finished", "complete", "completed", "that's it",
+        "all done", "wrapped", "shipped", "closed"
+      ],
+      "slots": [],
+      "sentence": "DONE. Task complete. Close the turn."
+    },
+    {
+      "id": 7,
+      "kind": "help",
+      "keys": [
+        "help", "need help", "assist", "assistance", "stuck",
+        "blocked", "what do i do", "how do i"
+      ],
+      "slots": [],
+      "sentence": "HELP. Operator requests assist. State the blocker."
+    },
+    {
+      "id": 8,
+      "kind": "sync",
+      "keys": [
+        "sync", "sync the book", "hash mismatch", "library mismatch",
+        "update the book", "wrong book"
+      ],
+      "slots": [],
+      "sentence": "SYNC. Library hash mismatch. Ship the book out of band before the next sentence."
+    },
+    {
+      "id": 9,
+      "kind": "thanks",
+      "keys": [
+        "thanks", "thank you", "thx", "ty", "appreciate it", "good looking"
+      ],
+      "slots": [],
+      "sentence": "THANKS. Receipt acknowledged with courtesy."
+    },
+    {
+      "id": 10,
+      "kind": "bye",
+      "keys": [
+        "bye", "goodbye", "later", "see you", "signing off",
+        "out", "over and out", "that's all"
+      ],
+      "slots": [],
+      "sentence": "OUT. Session closed."
+    }
+  ]
+}
