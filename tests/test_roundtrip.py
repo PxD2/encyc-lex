@@ -39,3 +39,11 @@ def test_warble():
 if __name__ == "__main__":
     test_phrase(); test_encyc_shards(); test_warble()
     print("ok")
+
+
+def test_match_is_whole_word():
+    from phrases.codec import PhraseBook
+    book = PhraseBook.load()
+    hit = book.match("the city is quiet")
+    assert hit is None or str(hit.get("kind")).lower() != "thanks"
+    assert book.match("thanks a lot") is not None

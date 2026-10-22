@@ -47,7 +47,9 @@ class PhraseBook:
         t = norm(text)
         if t in self.key_map:
             return self.by_id[self.key_map[t]]
-        hits = [k for k in self.key_map if k and k in t]
+        # whole-word match only: "ty" must not match inside "city"
+        padded = f" {t} "
+        hits = [k for k in self.key_map if k and f" {k} " in padded]
         if hits:
             hits.sort(key=len, reverse=True)
             return self.by_id[self.key_map[hits[0]]]
